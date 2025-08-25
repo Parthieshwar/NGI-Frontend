@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Foot Size Capture</title>
+  <style>
+    body {
+      margin: 0;
+      overflow: hidden;
+      background: #000;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      flex-direction: column;
+    }
+    canvas {
+      display: block;
+      background: #222;
+      max-width: 100%;
+    }
+    .controls {
+      margin-top: 10px;
+      text-align: center;
+    }
+    button {
+      padding: 10px 20px;
+      font-size: 16px;
+      border: none;
+      border-radius: 8px;
+      margin: 5px;
+      cursor: pointer;
+      background: #007bff;
+      color: #fff;
+    }
+  </style>
+</head>
+<body>
+  <canvas id="footCanvas"></canvas>
+  <div class="controls">
+    <button id="captureBtn">Capture</button>
+  </div>
+
+  <script>
+    const canvas = document.getElementById("footCanvas");
+    const ctx = canvas.getContext("2d");
+    const captureBtn = document.getElementById("captureBtn");
+
+    let videoStream;
+    let video = document.createElement("video");
+    let step = "front"; // "front" -> "side"
+    let capturedImages = {};
+
+    async function initCamera() {
+      videoStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" }, audio: false });
+      video.srcObject = videoStream;
+      video.play();
+
+      video.addEventListener("loadedmetadata", () => {
+        resizeCanvas();
+        drawFrame();
+      });
+    }
+
+    function resizeCanvas() {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight * 0.75; // keep some margin
+    }
+
+    function drawGuides() {
+      const margin = 35;
+      const boxWidth = canvas.width - margin * 2;
+      const boxHeight = canvas.height - margin * 2;
+
+      ctx.lineWidth = 4;
+      ctx.setLineDash([10, 6]);
+
+      if (step === "front") {
+        ctx.strokeStyle = "#007bff"; // blue
+        ctx.strokeRect(margin, margin, boxWidth, boxHeight);
+        ctx.font = "20px Arial";
+        ctx.fillStyle = "#007bff";
+        ctx.fillText("Place your foot (TOP view)", margin + 10, margin + 30);
+      } else if (step === "side") {
+        ctx.strokeStyle = "#28a745"; // green
+        ctx.strokeRect(margin, margin, boxWidth, boxHeight);
+        ctx.font = "20px Arial";
+        ctx.fillStyle = "#28a745";
+        ctx.fillText("Place your foot (SIDE view)", margin + 10, margin + 30);
+      }
+      ctx.setLineDash([]);
+    }
+
+    function drawFrame() {
+      ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+      drawGuides();
+      requestAnimationFrame(drawFrame);
+    }
+
+    captureBtn.addEventListener("click", () => {
+      const dataURL = canvas.toDataURL("image/png");
+
+      if (step === "front") {
+        capturedImages.front = dataURL;
+        alert("Front view captured! Now capture the SIDE view.");
+        step = "side";
+      } else if (step === "side") {
+        capturedImages.side = dataURL;
+        alert("Side view captured! Both images ready.");
+        console.log("Captured images:", capturedImages);
+        // Here you can send capturedImages.front & capturedImages.side to server
+      }
+    });
+
+    initCamera();
+    window.addEventListener("resize", resizeCanvas);
+  </script>
+</body>
+</html>

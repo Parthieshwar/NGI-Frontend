@@ -66,7 +66,7 @@ function App() {
     };
     setMessages((prev) => [...prev, aiMessage]);
   
-    // ✅ Deployment-safe backend URL
+    // Deployment-safe backend URL
     const backendURL = import.meta.env.VITE_BACKEND_URL.replace(/\/$/, "");
     const eventSource = new EventSource(
       `${backendURL}/stream?question=${encodeURIComponent(messageText)}`
@@ -84,15 +84,17 @@ function App() {
           { ...aiMessage, text: fullResponse.trim() },
         ]);
   
+        // Speak the response if TTS is supported
         if (ttsSupported) {
-          setTimeout(() => speak(fullResponse), 500);
+          setTimeout(() => speak(fullResponse.trim()), 500);
         }
         return;
       }
   
-      fullResponse += event.data + " ";
+      // Append chunk safely without adding extra gaps
+      fullResponse += (fullResponse ? " " : "") + event.data.trim();
   
-      // Update the last AI message live
+      // Live update the last AI message
       setMessages((prev) => [
         ...prev.slice(0, -1),
         { ...aiMessage, text: fullResponse },
