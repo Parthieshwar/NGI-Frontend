@@ -149,7 +149,7 @@ function App() {
       className={`h-screen min-h-screen flex flex-col items-center justify-center transition-colors duration-300 ${isDarkMode ? 'bg-black' : 'bg-white'}`}
       style={{
         backgroundImage: "url('/nehru.jpg')",
-        backgroundSize: '90%',
+        backgroundSize: '100% auto',
         backgroundPosition: 'center',
         backgroundRepeat: 'no-repeat'
       }}
