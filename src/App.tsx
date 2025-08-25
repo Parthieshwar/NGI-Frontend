@@ -149,7 +149,7 @@ function App() {
       className={`h-screen min-h-screen flex flex-col items-center justify-center transition-colors duration-300 ${isDarkMode ? 'bg-black' : 'bg-white'}`}
       style={{
         backgroundImage: "url('/nehru.jpg')",
-        backgroundSize: '100% auto',
+        backgroundSize: window.innerWidth < 640 ? 'auto 120%' : '100% auto', // 👈 phone vs desktop
         backgroundPosition: 'center',
         backgroundRepeat: 'no-repeat'
       }}
