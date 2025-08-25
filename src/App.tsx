@@ -78,28 +78,26 @@ function App() {
       if (event.data === "[DONE]") {
         eventSource.close();
     
-        const finalText = cleanAIResponse(fullResponse);
-    
         setMessages((prev) => [
           ...prev.slice(0, -1),
-          { ...aiMessage, text: finalText },
+          { ...aiMessage, text: fullResponse.trim() },
         ]);
     
-        if (ttsSupported) setTimeout(() => speak(finalText), 500);
+        if (ttsSupported) setTimeout(() => speak(fullResponse.trim()), 500);
         return;
       }
     
-      // Clean each chunk
-      const cleanChunk = cleanAIResponse(event.data);
+      // Fix spaced letters
+      const cleanChunk = event.data.replace(/(\S)\s(?=\S)/g, "$1");
+      
+      // Append without adding extra spaces
       fullResponse += cleanChunk;
     
-      // Live update the last AI message
       setMessages((prev) => [
         ...prev.slice(0, -1),
-        { ...aiMessage, text: cleanAIResponse(fullResponse) },
+        { ...aiMessage, text: fullResponse },
       ]);
     };
-    
     
   
     eventSource.onerror = (err) => {
@@ -159,7 +157,7 @@ function App() {
       {/* 3D Logo - Center when no messages */}
       {messages.length === 0 && (
         <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-          <ThreeDLogo className="w-48 h-48 sm:w-60 sm:h-60" />
+          <ThreeDLogo className="w-64 h-64 sm:w-80 sm:h-80" />
         </div>
       )}
 
@@ -404,20 +402,24 @@ function App() {
               </button>
             </div>
           </div>
+
           {/* Bottom Navigation */}
-          <div className="flex items-center justify-center space-x-3 sm:space-x-4 pb-2 sm:pb-3 lg:px-12 xl:px-16">
-            <div className="w-5 h-5 sm:w-6 sm:h-6 bg-white rounded-full flex items-center justify-center hover:bg-gray-200 cursor-pointer">
-              <Search className="w-3 h-3 sm:w-4 sm:h-4 text-black hover:text-blue-600" />
+          <div className={`
+            flex items-center justify-center space-x-6 sm:space-x-8 md:space-x-12 pb-3 sm:pb-4
+            lg:px-12 xl:px-16
+          `}>
+            <div className="w-7 h-7 sm:w-8 sm:h-8 bg-white rounded-full flex items-center justify-center hover:bg-gray-200 cursor-pointer">
+              <Search className="w-4 h-4 sm:w-5 sm:h-5 text-black hover:text-blue-600" />
             </div>
-            <div className="relative w-5 h-5 sm:w-6 sm:h-6 flex items-center justify-center rounded-full hover:bg-gray-700 cursor-pointer">
-              <Plus className="w-4 h-4 sm:w-5 sm:h-5 text-gray-400 hover:text-blue-400" />
-              <div className="absolute -bottom-1 left-1/2 transform -translate-x-1/2 w-1 h-1 bg-red-500 rounded-full"></div>
+            <div className="relative w-7 h-7 sm:w-8 sm:h-8 flex items-center justify-center rounded-full hover:bg-gray-700 cursor-pointer">
+              <Plus className="w-6 h-6 sm:w-7 sm:h-7 text-gray-400 hover:text-blue-400" />
+              <div className="absolute -bottom-1 sm:-bottom-2 left-1/2 transform -translate-x-1/2 w-1 h-1 bg-red-500 rounded-full"></div>
             </div>
-            <div className="w-5 h-5 sm:w-6 sm:h-6 flex items-center justify-center rounded-full hover:bg-gray-700 cursor-pointer">
-              <Sparkles className="w-4 h-4 sm:w-5 sm:h-5 text-gray-400 hover:text-blue-400" />
+            <div className="w-7 h-7 sm:w-8 sm:h-8 flex items-center justify-center rounded-full hover:bg-gray-700 cursor-pointer">
+              <Sparkles className="w-6 h-6 sm:w-7 sm:h-7 text-gray-400 hover:text-blue-400" />
             </div>
-            <div className="w-5 h-5 sm:w-6 sm:h-6 flex items-center justify-center rounded-full hover:bg-gray-700 cursor-pointer">
-              <Wifi className="w-4 h-4 sm:w-5 sm:h-5 text-gray-400 hover:text-blue-400" />
+            <div className="w-7 h-7 sm:w-8 sm:h-8 flex items-center justify-center rounded-full hover:bg-gray-700 cursor-pointer">
+              <Wifi className="w-6 h-6 sm:w-7 sm:h-7 text-gray-400 hover:text-blue-400" />
             </div>
           </div>
         </div>
