@@ -77,29 +77,28 @@ function App() {
     eventSource.onmessage = (event) => {
       if (event.data === "[DONE]") {
         eventSource.close();
-  
-        // Finalize the last AI message
+    
         setMessages((prev) => [
           ...prev.slice(0, -1),
           { ...aiMessage, text: fullResponse.trim() },
         ]);
-  
-        // Speak the response if TTS is supported
-        if (ttsSupported) {
-          setTimeout(() => speak(fullResponse.trim()), 500);
-        }
+    
+        if (ttsSupported) setTimeout(() => speak(fullResponse.trim()), 500);
         return;
       }
-  
-      // Append chunk safely without adding extra gaps
-      fullResponse += (fullResponse ? " " : "") + event.data.trim();
-  
-      // Live update the last AI message
+    
+      // Fix spaced letters
+      const cleanChunk = event.data.replace(/(\S)\s(?=\S)/g, "$1");
+      
+      // Append without adding extra spaces
+      fullResponse += cleanChunk;
+    
       setMessages((prev) => [
         ...prev.slice(0, -1),
         { ...aiMessage, text: fullResponse },
       ]);
     };
+    
   
     eventSource.onerror = (err) => {
       console.error("SSE connection error:", err);
