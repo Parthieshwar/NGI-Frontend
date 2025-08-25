@@ -151,7 +151,7 @@ function App() {
       className={`h-screen min-h-screen flex flex-col items-center justify-center transition-colors duration-300 ${isDarkMode ? 'bg-black' : 'bg-white'}`}
       style={{
         backgroundImage: "url('/nehru.jpg')",
-        backgroundSize: 'cover',
+        backgroundSize: '90%',
         backgroundPosition: 'center',
         backgroundRepeat: 'no-repeat'
       }}
@@ -159,7 +159,7 @@ function App() {
       {/* 3D Logo - Center when no messages */}
       {messages.length === 0 && (
         <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-          <ThreeDLogo className="w-64 h-64 sm:w-80 sm:h-80" />
+          <ThreeDLogo className="w-48 h-48 sm:w-60 sm:h-60" />
         </div>
       )}
 
